@@ -13,7 +13,7 @@ let productos = [
   { id: 12, nombre: "Sopa FuchiFu", categoria: "sopas", precio: 22, img: "./imagenes/SopaFuchifu.png" }]
 
 
-/* let carrito = [] */
+let carrito = []
 renderizarProductos(productos)
 
 
@@ -24,11 +24,11 @@ function renderizarProductos(array){
     let contenedor = document.getElementById("contenedor-productos")
     contenedor.innerHTML = " "
     array.forEach( producto => {
-      let cards = document.createElement("div")
+    let cards = document.createElement("div")
       cards.className = "cards"
       cards.innerHTML = `
         <div class=card-image> <img src=${producto.img}> </div>
-       
+      
         <div class=card-text> 
         <p class=card-meal-type> ${producto.categoria} </p>
         <h2 class=card-title> ${producto.nombre} </h2>
@@ -46,99 +46,170 @@ function renderizarProductos(array){
 
 //Función para el botón agregar al carrito
 function agregarProductoAlCarrito(e){
-  let carrito = []
-  mostrarTituloCarrito()
+  /*   let carrito = [] */
+/*   mostrarTituloCarrito() */
 
   let productoAgregado = productos.find(producto =>  producto.id === Number(e.target.id) )
-    if( carrito.some(producto => producto.id === productoAgregado.id) ){
-      alert("Ya esta en el carrito!")
-    }else{
-        carrito.push({
-        id: productoAgregado.id,
-        nombre: productoAgregado.nombre,
-        precio: productoAgregado.precio,
-        unidades: 1,
-        subtotal: productoAgregado.precio
-      })
-    }
+  if( carrito.some(producto => producto.id === productoAgregado.id) ){
+    alert("Ya esta en el carrito!")
+
+  }else{
+    carrito.push({
+      id: productoAgregado.id,
+      nombre: productoAgregado.nombre,
+      precio: productoAgregado.precio,
+      unidades: 1,
+      subtotal: productoAgregado.precio
+    })
+  }
+  
     renderizarCarrito(carrito)
-    console.log(carrito.some(producto => producto.id === productoAgregado.id))
+/*     console.log(carrito) */
   }
   
-  function mostrarTituloCarrito(){
-    let tituloCarrito = document.getElementById("titulo-carrito")
+  
+/*   function mostrarTituloCarrito(){
+  let tituloCarrito = document.createElement("div")
+  let tituloCarrito = document.getElementById("titulo-carrito") 
     tituloCarrito.innerHTML = `
-          <table>
-              <tr id=tabla> 
-              <th>Producto</th>
-              <th>Precio/Unidad</th>
-              <th>Cantidad</th>
-              <th>Acción</th>
-              <th>Subtotal</th>
-              </tr>
-          </table>  ` 
+    <table>
+    <tr id=tabla> 
+    <th>Producto</th>
+    <th>Precio/Unidad</th>
+    <th>Cantidad</th>
+    <th>Acción</th>
+    <th>Subtotal</th>
+    </tr>
+    </table>  ` 
+  }
+  */
+      
+    
+let totalPago = 0;
+ //Función para mostrar el carrito
+ function renderizarCarrito(array){
+   let carritoD = document.getElementById("carrito")
+   carritoD.innerHTML = "" 
+      carritoD.innerHTML = `
+        <table>
+        <tr id=tabla> 
+        <th>Producto</th>
+        <th>Precio/Unidad</th>
+        <th>Cantidad</th>
+        <th>Acción</th>
+          <th>Subtotal</th>
+          </tr>
+          </table>
+          <button id=comprar>Finalizar Compra</button>
+        <tr id=tabla>Total: ${totalPago}</tr>
+          ` 
+          
+          
+      array.forEach(producto => {
+        carritoD.innerHTML += `
+      <table>  
+      <tr id=tabla>
+      <td>${producto.nombre}</td>
+      <td>${producto.precio}</td>
+      <td>${producto.unidades}</td>
+      <td> 
+      <button id=${producto.id} class=boton-agregar>+</button>
+      <button class=boton-borrar>-</button>
+      </td>
+      <td>$${producto.subtotal}</td>
+      </tr>
+      </table>
+      `
+/*       console.log(carritoD) */
+    })
+/*     let totalDo = document.createElement("div")
+    totalDo.className = "total"
+    totalDo.innerHTML = `
+    <table>
+    <tr id=tabla>Total: ${totalPago}</tr>
+    </table>
+    <button id=comprar>Finalizar Compra</button>
+      ` */
+    /*     carritoD.innerHTML= `<tr id=tabla>Total</tr>` */
+    
+    let botonAgregar = document.getElementById(carritoD.id)
+    botonAgregar.addEventListener("click", aumentarCantidad)
+    let botonBorrar = document.getElementById("tabla")
+    botonBorrar.addEventListener("click", eliminarCantidad)
+    let botonComprar = document.getElementById("comprar")
+    botonComprar.addEventListener("click", terminarCompra)
+  }
+  
+  
+  
+  //Función boton para aumentar la cantidad de productos al carrito
+  function aumentarCantidad(e){
+    /*   console.log(e.target.id) */
+    let productoSelecionado = productos.find( producto => producto.id === Number(e.target.id))
+    let posParaAumentar = carrito.findIndex( producto => producto.id ===  productoSelecionado.id )
+    carrito[posParaAumentar].unidades++
+    carrito[posParaAumentar].subtotal = carrito[posParaAumentar].precio * carrito[posParaAumentar].unidades
+    totalPago = carrito.reduce( (acc, el)=> acc + (el.precio*el.unidades), 0)
+    console.log(posParaAumentar)
+    console.log(productoSelecionado)
+    renderizarCarrito(carrito)
   }
 
-  
-//Función para mostrar el carrito
-function renderizarCarrito(array){
-    let carrito = document.getElementById("carrito")
-    array.forEach(producto => {
-    carrito.innerHTML += `
-    <table>  
-        <tr id=tabla>
-        <td>${producto.nombre}</td>
-        <td>${producto.precio}</td>
-        <td>${producto.unidades}</td>
-        <td> 
-        <button id=${producto.id} class=boton-agregar>+</button>
-        <button id=${producto.id} class=boton-borrar>-</button>
-        </td>
-        <td>$${producto.subtotal}</td>
-        </tr>
-    </table>
-    `
-  })
-  let botonAgregar = document.getElementById(carrito.id)
-  botonAgregar.addEventListener("click", aumentarCantidad)
-  let botonBorrar = document.getElementById(carrito.id)
-  botonBorrar.addEventListener("click", eliminarCantidad)
-  console.log(carrito.id)
-/*   let botonComprar = document.getElementById("comprar")
-  botonComprar.addEventListener("click",terminarCompra) */
-}
 
 
-
-//Función boton para aumentar la cantidad de productos al carrito
-function aumentarCantidad(e){
-  console.log(e.target.id)
-  let productoSelecionado = productos.find( producto => producto.id == Number(e.target.id))
-  let posParaAumentar = carrito.findIndex( producto => producto.id ===  productoSelecionado.id)
-  carrito[posParaAumentar].unidades++
-  carrito[posParaAumentar].subtotal = carrito[posParaAumentar].precio * carrito[posParaAumentar].unidades
-  renderizarCarrito(carrito)
-}
 
 //Función botón para eliminar la cantidad de productos del carrito
 function eliminarCantidad(e){
-
+  
   console.log(e.target.id)
   let productoSelecionado = productos.find( producto => producto.id == Number(e.target.id))
   let posParaEliminar = carrito.findIndex( producto => producto.id ===  productoSelecionado.id)
-  carrito[posParaEliminar].unidades--
-  carrito[posParaEliminar].subtotal = carrito[posParaEliminar].precio * carrito[posParaAumentar].unidades
+  
+  carrito.remove()
+  console.log(productoSelecionado)
   renderizarCarrito(carrito)
 }
 
 //Función finalizar compra del carrito
-/* function terminarCompra(){
-  let carrito = document.getElementById("carrito")
-  carrito.innerHTML = " "
-} */
+/* let botonComprar = document.getElementById("comprar")
+botonComprar.addEventListener("click",terminarCompra) */
+function terminarCompra(){
+  let carritoDo = document.getElementById("carrito")
+  carritoDo.innerHTML = ""
+  Swal.fire(
+    'Gracias por su compra!',
+    'Hasta luego',
+    'success'
+    )
+}
 
 
 
-//Función calcular el total del carrito
+
+
 //Función para filtrar el carrito
+let inputs = document.getElementsByClassName("checks")
+for (const ind of inputs) {
+  ind.addEventListener("click", filtrarCategoria)
+}
+
+function filtrarCategoria() {
+/*       console.log(e.target.id) */
+      let filtros = []
+      for (const ind of inputs) {
+          console.log(ind.checked)
+          console.log(ind.id)
+          if (ind.checked) {
+              filtros.push(ind.id)
+          }
+      }
+      console.log(filtros)
+      let arrayFiltrado = productos.filter(producto => filtros.includes(producto.categoria))
+      if (arrayFiltrado.length > 0) {
+          renderizarProductos(arrayFiltrado)
+      } else {
+          renderizarProductos(productos)
+      }
+  }
+
 //Función para limpiar el carrito
